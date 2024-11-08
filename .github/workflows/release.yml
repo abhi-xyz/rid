@@ -17,8 +17,11 @@ jobs:
             archive: tar.gz tar.xz tar.zst
           - target: x86_64-apple-darwin
             archive: zip
+
     steps:
-      - uses: actions/checkout@master
+      - uses: actions/checkout@v3
+      
+      # Step to compile the Rust project
       - name: Compile and release
         uses: rust-build/rust-build.action@v1.4.5
         env:
@@ -26,3 +29,29 @@ jobs:
         with:
           RUSTTARGET: ${{ matrix.target }}
           ARCHIVE_TYPES: ${{ matrix.archive }}
+
+      # Step to upload compiled binaries as artifacts
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ matrix.target }}-artifact
+          path: ./target/${{ matrix.target }}/release/*${{ matrix.archive }}
+
+  # New job to create a release and upload artifacts
+  publish-release:
+    needs: release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: ${{ matrix.target }}-artifact
+          path: ./artifacts
+
+      - name: Create GitHub release
+        uses: softprops/action-gh-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          files: ./artifacts/*
+

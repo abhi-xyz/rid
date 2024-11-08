@@ -1,3 +1,4 @@
+
 on:
   push:
     branches:
@@ -14,7 +15,11 @@ jobs:
           - target: x86_64-pc-windows-gnu
             archive: zip
           - target: x86_64-unknown-linux-musl
-            archive: tar.gz tar.xz tar.zst
+            archive: tar.gz
+          - target: x86_64-unknown-linux-musl
+            archive: tar.xz
+          - target: x86_64-unknown-linux-musl
+            archive: tar.zst
           - target: x86_64-apple-darwin
             archive: zip
 
@@ -30,14 +35,13 @@ jobs:
           RUSTTARGET: ${{ matrix.target }}
           ARCHIVE_TYPES: ${{ matrix.archive }}
 
-      # Step to upload compiled binaries as artifacts
+      # Upload compiled binaries
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: ${{ matrix.target }}-artifact
+          name: ${{ matrix.target }}-${{ matrix.archive }}
           path: ./target/${{ matrix.target }}/release/*${{ matrix.archive }}
 
-  # New job to create a release and upload artifacts
   publish-release:
     needs: release
     runs-on: ubuntu-latest
@@ -45,7 +49,7 @@ jobs:
       - name: Download artifacts
         uses: actions/download-artifact@v3
         with:
-          name: ${{ matrix.target }}-artifact
+          name: ${{ matrix.target }}-${{ matrix.archive }}
           path: ./artifacts
 
       - name: Create GitHub release

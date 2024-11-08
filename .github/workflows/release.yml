@@ -4,52 +4,21 @@ on:
       - "master"
 
 jobs:
-  release:
-    name: Build and Release ${{ matrix.target }}
+  build:
+    name: Build
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - target: x86_64-unknown-linux-musl
-            archive: tar.gz
-
-
     steps:
-      - uses: actions/checkout@v3
-
-      # Step to compile the Rust project
-      - name: Compile and release
+      - uses: actions/checkout@master
+      - name: Compile
+        id: compile
         uses: rust-build/rust-build.action@v1.4.5
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          RUSTTARGET: ${{ matrix.target }}
-          ARCHIVE_TYPES: ${{ matrix.archive }}
-
-      # Upload compiled artifacts to be used later in the release step
-      - name: Upload build artifacts
+          RUSTTARGET: x86_64-unknown-linux-musl
+          UPLOAD_MODE: none
+      - name: Upload artifact
         uses: actions/upload-artifact@v3
         with:
-          name: ${{ matrix.target }}-${{ matrix.archive }}
-          path: ./target/${{ matrix.target }}/release/*${{ matrix.archive }}
-
-  publish-release:
-    needs: release
-    runs-on: ubuntu-latest
-    steps:
-      # Download the uploaded artifacts for use in the release
-      - name: Download artifacts
-        uses: actions/download-artifact@v3
-        with:
-          name: ${{ matrix.target }}-${{ matrix.archive }}
-          path: ./artifacts
-
-      # Step to create the release on GitHub and upload the artifacts
-      - name: Create GitHub Release and upload files
-        uses: softprops/action-gh-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          files: ./artifacts/*
-
+          name: Binary
+          path: |
+            ${{ steps.compile.outputs.BUILT_ARCHIVE }}
+            ${{ steps.compile.outputs.BUILT_CHECKSUM }}

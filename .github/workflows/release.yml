@@ -1,17 +1,27 @@
-
 on:
   push:
     branches:
       - "master"
 
 permissions:
-  contents: write  # Grant the required permissions for creating releases
-  id-token: write  # May be necessary for integrations
+  contents: write
+  id-token: write
 
 jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - target: x86_64-pc-windows-gnu
+            archive: zip
+          - target: x86_64-unknown-linux-musl
+            archive: tar.gz tar.xz tar.zst
+          - target: x86_64-apple-darwin
+            archive: zip
+    
     steps:
       - uses: actions/checkout@master
       
@@ -53,30 +63,3 @@ jobs:
           asset_path: ${{ steps.compile.outputs.BUILT_CHECKSUM }}
           asset_name: binary.tar.gz.sha256  # Adjust the name accordingly
           asset_content_type: application/text  # Adjust the content type based on your checksum file
-
-
-
-# on:
-#   push:
-#     branches:
-#       - "master"
-#
-# jobs:
-#   build:
-#     name: Build
-#     runs-on: ubuntu-latest
-#     steps:
-#       - uses: actions/checkout@master
-#       - name: Compile
-#         id: compile
-#         uses: rust-build/rust-build.action@v1.4.5
-#         with:
-#           RUSTTARGET: x86_64-unknown-linux-musl
-#           UPLOAD_MODE: none
-#       - name: Upload artifact
-#         uses: actions/upload-artifact@v3
-#         with:
-#           name: Binary
-#           path: |
-#             ${{ steps.compile.outputs.BUILT_ARCHIVE }}
-#             ${{ steps.compile.outputs.BUILT_CHECKSUM }}

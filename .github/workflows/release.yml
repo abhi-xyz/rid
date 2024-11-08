@@ -5,26 +5,19 @@ on:
 
 jobs:
   release:
-    name: release ${{ matrix.target }}
+    name: Build and Release ${{ matrix.target }}
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
         include:
-          - target: x86_64-pc-windows-gnu
-            archive: zip
           - target: x86_64-unknown-linux-musl
             archive: tar.gz
-          - target: x86_64-unknown-linux-musl
-            archive: tar.xz
-          - target: x86_64-unknown-linux-musl
-            archive: tar.zst
-          - target: x86_64-apple-darwin
-            archive: zip
+
 
     steps:
       - uses: actions/checkout@v3
-      
+
       # Step to compile the Rust project
       - name: Compile and release
         uses: rust-build/rust-build.action@v1.4.5
@@ -34,8 +27,8 @@ jobs:
           RUSTTARGET: ${{ matrix.target }}
           ARCHIVE_TYPES: ${{ matrix.archive }}
 
-      # Upload compiled binaries
-      - name: Upload artifacts
+      # Upload compiled artifacts to be used later in the release step
+      - name: Upload build artifacts
         uses: actions/upload-artifact@v3
         with:
           name: ${{ matrix.target }}-${{ matrix.archive }}
@@ -45,16 +38,18 @@ jobs:
     needs: release
     runs-on: ubuntu-latest
     steps:
+      # Download the uploaded artifacts for use in the release
       - name: Download artifacts
         uses: actions/download-artifact@v3
         with:
           name: ${{ matrix.target }}-${{ matrix.archive }}
           path: ./artifacts
 
-      # Create GitHub release and upload the artifacts
-      - name: Create GitHub release
+      # Step to create the release on GitHub and upload the artifacts
+      - name: Create GitHub Release and upload files
         uses: softprops/action-gh-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           files: ./artifacts/*
+

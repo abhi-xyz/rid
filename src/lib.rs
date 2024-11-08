@@ -5,7 +5,7 @@ use std::path::Path;
 use dirs::data_local_dir;
 
 pub fn remove_file(file: &Path) -> Result<(),Box<dyn Error>> {
-    let p = fs::exists(file)?;
+    let p = fs::exists(file).expect("Err");
     let dest = if p {
         let trash_dir = data_local_dir().expect("Failed to get local data directory").join("Trash/files").join(file);
         println!("{}", trash_dir.display());

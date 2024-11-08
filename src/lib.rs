@@ -6,11 +6,13 @@ use dirs::data_local_dir;
 
 pub fn remove_file(file: &Path) -> Result<(),Box<dyn Error>> {
     let p = path::Path::new(file).exists();
+    println!("File: {}", &file.display());
     let dest = if p {
         let trash_dir = data_local_dir().expect("Failed to get local data directory").join("Trash/files").join(file);
         println!("{}", trash_dir.display());
         "ds".to_string()
     } else {
+        eprintln!("rid: cannot remove '{}': No such file or directory", &file.display());
         return Ok(());
     };
     println!("{}", dest);

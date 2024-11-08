@@ -1,7 +1,7 @@
 use std::path::PathBuf;
 
 use clap::{Parser, Subcommand};
-use gr::{recursive_remove, remove_file};
+use rid::{recursive_remove, remove_file};
 
 #[derive(Parser)]
 #[command(version, about, long_about = "By default, gr does not remove directories. Use the --recursive (-r) option to remove each listed directory, too, along with all of its contents.")]

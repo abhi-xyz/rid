@@ -142,14 +142,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "gr"
-version = "0.1.0"
-dependencies = [
- "clap",
- "dirs",
-]
-
-[[package]]
 name = "heck"
 version = "0.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -210,6 +202,14 @@ dependencies = [
  "getrandom",
  "libredox",
  "thiserror",
+]
+
+[[package]]
+name = "rid"
+version = "0.1.0"
+dependencies = [
+ "clap",
+ "dirs",
 ]
 
 [[package]]

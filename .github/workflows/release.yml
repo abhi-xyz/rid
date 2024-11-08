@@ -14,7 +14,7 @@ jobs:
     
     steps:
       - uses: actions/checkout@master
-      
+
       - name: Compile
         id: compile
         uses: rust-build/rust-build.action@v1.4.5
@@ -25,31 +25,86 @@ jobs:
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
+        with:
+          tag_name: v1.0.3
+          release_name: 'v1.0.3 Release'
+          body: 'Release notes for v1.0.3'
+          draft: false
+          prerelease: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: v1.0.2  # Set the release tag here
-          release_name: 'v1.0.2 Release'  # Set the release name
-          body: 'Release notes for v1.0.2'  # Optional release notes
-          draft: false  # Set to true if you want the release to be a draft
-          prerelease: false  # Set to true if this is a pre-release
 
       - name: Upload artifact to release
         uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ${{ steps.compile.outputs.BUILT_ARCHIVE }}
-          asset_name: binary.tar.gz  # Adjust the name according to your build artifact
-          asset_content_type: application/gzip  # Adjust the content type based on your file type
+          asset_name: gr.tar.gz
+          asset_content_type: application/gzip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Upload checksum to release
         uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ${{ steps.compile.outputs.BUILT_CHECKSUM }}
-          asset_name: binary.tar.gz.sha256  # Adjust the name accordingly
-          asset_content_type: application/text  # Adjust the content type based on your checksum file
+          asset_name: gr.tar.gz.sha256
+          asset_content_type: application/text
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+# on:
+#   push:
+#     branches:
+#       - "master"
+#
+# permissions:
+#   contents: write
+#   id-token: write
+#
+# jobs:
+#   build:
+#     name: Build
+#     runs-on: ubuntu-latest
+#
+#     steps:
+#       - uses: actions/checkout@master
+#
+#       - name: Compile
+#         id: compile
+#         uses: rust-build/rust-build.action@v1.4.5
+#         with:
+#           RUSTTARGET: x86_64-unknown-linux-musl
+#           UPLOAD_MODE: none
+#
+#       - name: Create Release
+#         id: create_release
+#         uses: actions/create-release@v1
+#         env:
+#           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#         with:
+#           tag_name: v1.0.2  # Set the release tag here
+#           release_name: 'v1.0.2 Release'  # Set the release name
+#           body: 'Release notes for v1.0.2'  # Optional release notes
+#           draft: false  # Set to true if you want the release to be a draft
+#           prerelease: false  # Set to true if this is a pre-release
+#
+#       - name: Upload artifact to release
+#         uses: actions/upload-release-asset@v1
+#         env:
+#           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#         with:
+#           upload_url: ${{ steps.create_release.outputs.upload_url }}
+#           asset_path: ${{ steps.compile.outputs.BUILT_ARCHIVE }}
+#           asset_name: gr.tar.gz 
+#           asset_content_type: application/gzip
+#
+#       - name: Upload checksum to release
+#         uses: actions/upload-release-asset@v1
+#         env:
+#           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#         with:
+#           upload_url: ${{ steps.create_release.outputs.upload_url }}
+#           asset_path: ${{ steps.compile.outputs.BUILT_CHECKSUM }}
+#           asset_name: gr.tar.gz.sha256
+#           asset_content_type: application/text

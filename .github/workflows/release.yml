@@ -4,6 +4,10 @@ on:
     branches:
       - "master"
 
+permissions:
+  contents: write  # Grant the required permissions for creating releases
+  id-token: write  # May be necessary for integrations
+
 jobs:
   build:
     name: Build

@@ -11,6 +11,7 @@
   outputs = { self, nixpkgs, unstable-nixpkgs, rust-overlay, flake-utils, ... }:
     flake-utils.lib.eachDefaultSystem (system:
       let
+        manifest = (pkgs.lib.importTOML ./Cargo.toml).package;
         overlays = [
           (import rust-overlay)
           (final: prev: {
@@ -25,7 +26,11 @@
         };
       in
         {
-        devShells.default = import ./nix/shell.nix { inherit pkgs; }; 
+        devShells.default = import ./nix/shell.nix { inherit pkgs; };
+        packages = {
+          ${manifest.name} = pkgs.callPackage ./nix/default.nix { inherit pkgs; };
+          default = pkgs.callPackage ./nix/default.nix { inherit pkgs; };
+        };
       }
     );
 }

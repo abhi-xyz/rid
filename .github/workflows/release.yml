@@ -21,6 +21,7 @@ jobs:
         id: create_release
         uses: actions/create-release@v1
         with:
+          token: ${{ secrets.GITHUB_TOKEN }}  # Authentication token
           tag_name: v1.0.0  # Set the release tag here
           release_name: 'v1.0.0 Release'  # Set the release name
           body: 'Release notes for v1.0.0'  # Optional release notes
@@ -42,6 +43,7 @@ jobs:
           asset_path: ${{ steps.compile.outputs.BUILT_CHECKSUM }}
           asset_name: binary.tar.gz.sha256  # Adjust the name accordingly
           asset_content_type: application/text  # Adjust the content type based on your checksum file
+
 
 # on:
 #   push:

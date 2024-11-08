@@ -1,4 +1,3 @@
-
 on:
   push:
     branches:
@@ -52,10 +51,10 @@ jobs:
           name: ${{ matrix.target }}-${{ matrix.archive }}
           path: ./artifacts
 
+      # Create GitHub release and upload the artifacts
       - name: Create GitHub release
         uses: softprops/action-gh-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           files: ./artifacts/*
-

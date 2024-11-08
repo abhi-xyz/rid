@@ -31,6 +31,8 @@
           ${manifest.name} = pkgs.callPackage ./nix/default.nix { inherit pkgs; };
           default = pkgs.callPackage ./nix/default.nix { inherit pkgs; };
         };
+        homeManagerModules.rid = import ./nix/module.nix { inherit pkgs; };
+        homeManagerModules.default = self.homeManagerModules.rid;
       }
     );
 }

@@ -1,3 +1,3 @@
 release:
-  git tag v0.1.1
+  git tag v0.1.2
   git push --tags

@@ -9,16 +9,61 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@master
+      
       - name: Compile
         id: compile
         uses: rust-build/rust-build.action@v1.4.5
         with:
           RUSTTARGET: x86_64-unknown-linux-musl
           UPLOAD_MODE: none
-      - name: Upload artifact
-        uses: actions/upload-artifact@v3
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
         with:
-          name: Binary
-          path: |
-            ${{ steps.compile.outputs.BUILT_ARCHIVE }}
-            ${{ steps.compile.outputs.BUILT_CHECKSUM }}
+          tag_name: v1.0.0  # Set the release tag here
+          release_name: 'v1.0.0 Release'  # Set the release name
+          body: 'Release notes for v1.0.0'  # Optional release notes
+          draft: false  # Set to true if you want the release to be a draft
+          prerelease: false  # Set to true if this is a pre-release
+
+      - name: Upload artifact to release
+        uses: actions/upload-release-asset@v1
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ${{ steps.compile.outputs.BUILT_ARCHIVE }}
+          asset_name: binary.tar.gz  # Adjust the name according to your build artifact
+          asset_content_type: application/gzip  # Adjust the content type based on your file type
+
+      - name: Upload checksum to release
+        uses: actions/upload-release-asset@v1
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ${{ steps.compile.outputs.BUILT_CHECKSUM }}
+          asset_name: binary.tar.gz.sha256  # Adjust the name accordingly
+          asset_content_type: application/text  # Adjust the content type based on your checksum file
+
+# on:
+#   push:
+#     branches:
+#       - "master"
+#
+# jobs:
+#   build:
+#     name: Build
+#     runs-on: ubuntu-latest
+#     steps:
+#       - uses: actions/checkout@master
+#       - name: Compile
+#         id: compile
+#         uses: rust-build/rust-build.action@v1.4.5
+#         with:
+#           RUSTTARGET: x86_64-unknown-linux-musl
+#           UPLOAD_MODE: none
+#       - name: Upload artifact
+#         uses: actions/upload-artifact@v3
+#         with:
+#           name: Binary
+#           path: |
+#             ${{ steps.compile.outputs.BUILT_ARCHIVE }}
+#             ${{ steps.compile.outputs.BUILT_CHECKSUM }}

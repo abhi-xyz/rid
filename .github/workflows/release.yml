@@ -15,15 +15,15 @@ jobs:
         id: compile
         uses: rust-build/rust-build.action@v1.4.5
         with:
-          repo_token: "${{ secrets.GITHUB_TOKEN }}"
           RUSTTARGET: x86_64-unknown-linux-musl
           UPLOAD_MODE: none
 
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          repo_token: "${{ secrets.GITHUB_TOKEN }}"
           tag_name: v1.0.0  # Set the release tag here
           release_name: 'v1.0.0 Release'  # Set the release name
           body: 'Release notes for v1.0.0'  # Optional release notes
@@ -32,8 +32,9 @@ jobs:
 
       - name: Upload artifact to release
         uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          repo_token: "${{ secrets.GITHUB_TOKEN }}"
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ${{ steps.compile.outputs.BUILT_ARCHIVE }}
           asset_name: binary.tar.gz  # Adjust the name according to your build artifact
@@ -41,8 +42,9 @@ jobs:
 
       - name: Upload checksum to release
         uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          repo_token: "${{ secrets.GITHUB_TOKEN }}"
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ${{ steps.compile.outputs.BUILT_CHECKSUM }}
           asset_name: binary.tar.gz.sha256  # Adjust the name accordingly

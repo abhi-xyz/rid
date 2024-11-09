@@ -28,8 +28,8 @@
         {
         devShells.default = import ./nix/shell.nix { inherit pkgs; };
         packages = {
-          ${manifest.name} = pkgs.callPackage ./nix/default.nix { inherit pkgs; };
-          default = pkgs.callPackage ./nix/default.nix { inherit pkgs; };
+          ${manifest.name} = pkgs.callPackage ./nix/default.nix { };
+          default = pkgs.callPackage ./nix/default.nix { };
         };
         homeManagerModules.rid = import ./nix/module.nix { inherit pkgs; };
         homeManagerModules.default = self.homeManagerModules.rid;

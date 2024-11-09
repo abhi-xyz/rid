@@ -6,6 +6,8 @@ use std::path::Path;
 use chrono::Local;
 use dirs::data_local_dir;
 
+pub mod history;
+
 pub fn remove_file(file: &Path) -> Result<(),Box<dyn Error>> {
     let p = path::Path::new(file).exists();
     if p {
@@ -20,7 +22,7 @@ pub fn remove_file(file: &Path) -> Result<(),Box<dyn Error>> {
             let new = format!("{}",trash_dir.join(new_name).display());
             println!("pwd: {}", current_dir().unwrap().to_str().unwrap());
             println!("target: {}", &new);
-            fs::rename(file, new)?;
+            fs::rename(file, &new)?;
         } else {
             println!("pwd: {}", current_dir().unwrap().to_str().unwrap());
             println!("target: {}", &trash_dir.join(file).display());

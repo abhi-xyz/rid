@@ -1,7 +1,6 @@
 {
 config,
-pkgs,
-lib,
+pkgs ? import <nixpkgs> { },
 ...
 }:
 let
@@ -9,16 +8,15 @@ let
 in
   {
   options.program.${manifest.name} = {
-    enable = lib.mkEnableOption "Enable the program";
+    enable = pkgs.lib.mkEnableOption "Enable the program";
 
-    package = lib.mkOption {
-      type = lib.types.package;
+    package = pkgs.lib.mkOption {
+      type = pkgs.lib.types.package;
       default = pkgs.callPackage ./default.nix { };
       description = "The package to use.";
     };
   };
-
-  config = lib.mkIf config.program.${manifest.name}.enable {
+  config = pkgs.lib.mkIf config.program.${manifest.name}.enable {
     home.packages = [ config.program.${manifest.name}.package ];
   };
 }

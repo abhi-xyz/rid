@@ -5,6 +5,7 @@ lib,
 ...
 }:
 let
+    manifest = (pkgs.lib.importTOML ../../Cargo.toml).package;
 in
   {
   options.program.${manifest.name} = {

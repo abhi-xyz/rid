@@ -1,3 +1,6 @@
+dev:
+  nix develop ./nix/dev --command fish
+
 remote-run:
   nix run github:abhi-xyz/rid -- help
 

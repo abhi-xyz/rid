@@ -1,5 +1,7 @@
+use std::ops::Deref;
 use std::path::PathBuf;
 use clap::{Parser, Subcommand};
+use rid::garbage_collection::gc;
 use rid::history::write_history;
 use rid::{recursive_remove, remove_file};
 
@@ -11,7 +13,7 @@ struct Cli {
     /// Remove directories and their contents recursively
     #[arg(short, long, value_name = "FILE")]
     recursive: Option<Vec<PathBuf>>,
-    
+ 
     #[arg(short, long)]
     json: Option<bool>,
 
@@ -25,6 +27,10 @@ enum Commands {
     Debug {
         #[arg(short, long)]
         list: bool,
+    },
+    Gc {
+        // #[arg(short, long)]
+        date: i8,
     },
 }
 
@@ -54,6 +60,7 @@ fn main() {
                 println!("Not printing testing lists...");
             }
         }
+        Some(Commands::Gc { date }) => gc(date).unwrap(),
         None => {}
     }
 }

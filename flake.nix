@@ -11,10 +11,13 @@
     manifest = (pkgs.lib.importTOML ./Cargo.toml).package;
   in {
     devShells.default = import ./nix/shell.nix {};
-
     packages.${system} = {
       ${manifest.name} = pkgs.callPackage ./nix/release/default.nix { };
       default = self.packages.${system}.${manifest.name};
+    };
+    homeManagerModules = {
+      brightness = import ./nix/release/home-module.nix { };
+      default = self.homeManagerModules.brightness;
     };
   };
 }

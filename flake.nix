@@ -16,7 +16,7 @@
       default = self.packages.${system}.${manifest.name};
     };
     homeManagerModules = {
-      ${manifest.name} = import ./nix/release/home-module.nix { };
+      ${manifest.name} = import ./nix/release/home-module.nix { inherit pkgs; };
       default = self.homeManagerModules.${manifest.name};
     };
   };

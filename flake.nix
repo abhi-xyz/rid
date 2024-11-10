@@ -16,8 +16,8 @@
       default = self.packages.${system}.${manifest.name};
     };
     homeManagerModules = {
-      brightness = import ./nix/release/home-module.nix { };
-      default = self.homeManagerModules.brightness;
+      ${manifest.name} = import ./nix/release/home-module.nix { };
+      default = self.homeManagerModules.${manifest.name};
     };
   };
 }

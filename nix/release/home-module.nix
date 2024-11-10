@@ -1,5 +1,6 @@
 {
 pkgs ? import <nixpkgs> { },
+config,
 ...
 }:
 let
@@ -15,7 +16,7 @@ in
       description = "The package to use.";
     };
   };
-  config = pkgs.lib.mkIf pkgs.config.program.${manifest.name}.enable {
-    home.packages = [ pkgs.config.program.${manifest.name}.package ];
+  config = pkgs.lib.mkIf config.program.${manifest.name}.enable {
+    home.packages = [ config.program.${manifest.name}.package ];
   };
 }

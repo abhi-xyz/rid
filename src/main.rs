@@ -7,10 +7,10 @@ use rid::{recursive_remove, remove_file};
 #[command(version, about, long_about = "By default, rid does not remove directories. Use the --recursive (-r) option to remove each listed directory, too, along with all of its contents.")]
 struct Cli {
     /// Remove files
-    file: Option<PathBuf>,
+    file: Option<Vec<PathBuf>>,
     /// Remove directories and their contents recursively
     #[arg(short, long, value_name = "FILE")]
-    recursive: Option<PathBuf>,
+    recursive: Option<Vec<PathBuf>>,
     
     #[arg(short, long)]
     json: Option<bool>,
@@ -31,11 +31,11 @@ enum Commands {
 fn main() {
     let cli = Cli::parse();
 
-    if let Some(file) = cli.file.as_deref() {
+    if let Some(file) = cli.file {
         remove_file(file).unwrap();
     }
 
-    if let Some(path) = cli.recursive.as_deref() {
+    if let Some(path) = cli.recursive {
         recursive_remove(path).unwrap();
     }
     if let Some(t) = cli.json {

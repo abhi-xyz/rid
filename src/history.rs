@@ -24,10 +24,11 @@ struct HistoryItems {
 
 pub fn write_history_as_json() -> Result<(), Box<dyn Error>> {
     let c_time = Local::now();
-    let formatted_time = c_time.format("%Y-%m-%d_%H:%M:%S").to_string();
+    let _formatted_time = c_time.format("%Y-%m-%d_%H:%M:%S").to_string();
     Ok(())
 }
 
+#[allow(dead_code)]
 fn test_function_01() {
     let c_time = Local::now();
     let formatted_time = c_time.format("%Y-%m-%d_%H:%M:%S").to_string();

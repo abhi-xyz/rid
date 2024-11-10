@@ -1,7 +1,7 @@
 { config, pkgs, lib, ... }:
 let
   tomlFormat = pkgs.formats.toml { };
-  manifest = (pkgs.lib.importTOML ../Cargo.toml).package;
+  manifest = (pkgs.lib.importTOML ../../Cargo.toml).package;
 in
   {
   options.program.${manifest.name} = {
@@ -16,11 +16,11 @@ in
       type = tomlFormat.type;
       default = { };
       example = lib.literalExpression ''
-                [test-01]
-                one = "test one"
+        [test-01]
+        one = "test one"
       '';
       description = ''
-                Configuration written to {file}`$XDG_CONFIG_HOME/${manifest.name}/config.toml`.
+      Configuration written to {file}`$XDG_CONFIG_HOME/${manifest.name}/config.toml`.
       '';
     };
   };

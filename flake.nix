@@ -15,9 +15,13 @@
       ${manifest.name} = pkgs.callPackage ./nix/release/default.nix { };
       default = self.packages.${system}.${manifest.name};
     };
+    nixosModules = {
+      ${manifest.name} = ./nix/release/module.nix;
+      nixosModules.default = self.nixosModules.${manifest.name};
+    };
     homeManagerModules = {
       ${manifest.name} = ./nix/release/home-module.nix;
-        default = self.homeManagerModules.${manifest.name};
+      default = self.homeManagerModules.${manifest.name};
     };
   };
 }

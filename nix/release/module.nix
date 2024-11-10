@@ -9,7 +9,7 @@ in
 
     package = lib.mkOption {
       type = lib.types.package;
-      default = pkgs.callPackage ./default.nix { check = false; };
+      default = pkgs.callPackage ./default.nix { };
       description = "The ${manifest.name} package to use.";
     };
     settings = lib.mkOption {

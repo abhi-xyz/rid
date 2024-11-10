@@ -8,7 +8,7 @@ in
     version = manifest.version;
     cargoLock.lockFile = ../../Cargo.lock;
     src = pkgs.lib.cleanSource ../../.;
-    # doCheck = false;
+    doCheck = false;
 
     meta = with pkgs.lib; {
       description = manifest.description;

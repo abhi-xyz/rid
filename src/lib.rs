@@ -12,6 +12,10 @@ pub mod history;
 pub fn remove_file(file: Vec<PathBuf>) -> Result<(),Box<dyn Error>> {
     for i in file {
         let p = path::Path::new(&i).exists();
+        if i.is_dir() {
+            eprintln!("{} is a directory.\nTry: rid -r", i.display());
+            return Ok(());
+        }
         if p {
             let trash_dir = data_local_dir().expect("Failed to get local data directory").join("Trash/files");
             if trash_dir.join(&i).exists() {

@@ -2,9 +2,12 @@ use std::env::current_dir;
 use std::error::Error;
 use std::path::{Path, PathBuf};
 use std::{fs, path};
-
 use chrono::Local;
+use clap::builder::Str;
 use dirs::data_local_dir;
+use log::trace;
+
+use crate::utils::{current_time, trash_dir};
 
 /*
 FIX: can't remove items from hidden dirs
@@ -12,32 +15,108 @@ rid .github/workflows/release.yml
 thread 'main' panicked at src/main.rs:41:27:
 called `Result::unwrap()` on an `Err` value: Os { code: 2, kind: NotFound, message: "No such file or directory" }
 note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+abhi@nixos ~> touch fsdsdfd
+abhi@nixos ~> rid fsdsdfd  NOTE: worked here since there where no need to extract stem and extension 
+abhi@nixos ~> touch fsdsdfd
+abhi@nixos ~> rid fsdsdfd                    
+thread 'main' panicked at src/core.rs:31:53:  NOTE: failed cuz of extraction
+called `Option::unwrap()` on a `None` value
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+fish: Job 1, 'rid fsdsdfd' terminated by signal SIGABRT (Abort)
+
 */
+
+#[derive(Debug)]
+struct Trash {
+    // id: i32,
+    field: PathBuf,
+}
+
+impl Trash {
+    fn is_dir() {
+        
+    }
+    fn is_file() {
+        todo!();
+    }
+}
+
+/// Splits the given `&Path` into directory path (prefix) and file name (suffix).
+///
+/// # Arguments
+/// - `path`: A referance to `Path` containing the path to be split.
+///
+/// # Returns
+/// - `Ok((String, String))`: A tuple containing the directory path and file name as `String`s
+/// - `Err(Box<dyn Error>)`: An error if the delimiter `/` is not found or the path conversion fails. Which means the path only contains file name.
+///
+/// # Note
+/// - It wont check whether the path exists or not
+pub fn split_path_and_file(path: &Path) -> Result<(String, String), Box<dyn Error>> {
+    match path.to_str().unwrap().rsplit_once("/") {
+        Some((prefix, suffix)) => {
+            trace!("Prefix: {}", prefix);
+            trace!("Sufix: {}", suffix);
+            Ok((prefix.to_string(), suffix.to_string()))
+        }
+        None => {
+            log::info!("Delimiter '/' not found in the string.");
+            Err("Delimiter '/' not found in the path".into())
+        }
+    }
+}
+
+
 pub fn remove_file(file: Vec<PathBuf>) -> Result<(), Box<dyn Error>> {
+    trace!("Hello from remove_file function");
     for i in file {
+        trace!("i in files: {:#?}", &i);
         let p = path::Path::new(&i).exists();
         if i.is_dir() {
             eprintln!("{} is a directory.\nTry: rid -r", i.display());
             return Ok(());
         }
         if p {
-            let trash_dir = data_local_dir()
-                .expect("Failed to get local data directory")
-                .join("Trash/files");
+            //
+            match split_path_and_file(&i) {
+                Ok((p, s)) => {
+                    println!("Got prefix: {p}");
+                    println!("Got suffix: {s}");
+                }
+                Err(_) => {
+                    continue;
+                }
+            }
+            //
+            let absolute_path = &i.to_str().unwrap().rsplit_once("/").expect("Error while extracting path");
+            trace!("file name: {}", absolute_path.0);
+            trace!("path: {}", absolute_path.1);
+            let trash_dir = trash_dir();
             if trash_dir.join(&i).exists() {
-                let c_time = Local::now();
-                let formatted_time = c_time.format("%Y-%m-%d_%H:%M:%S").to_string();
-                let stem_name = Path::new(&i).file_stem().expect("Err").to_str().unwrap();
-                let ext = Path::new(&i).extension().unwrap().to_str().unwrap();
+                trace!("Hello from if block\n");
+                //let c_time = Local::now();
+                //trace!("{}", &c_time);
+                //let formatted_time = c_time.format("%Y-%m-%d_%H:%M:%S").to_string();
+                let formatted_time = current_time().format("%Y-%m-%d_%H:%M:%S").to_string();
+                trace!("{}", &formatted_time);
+                let stem_name = Path::new(&i).file_stem().expect("Failed to get stem name of the file").to_str().expect("Failed to convert path to &str");
+                let ext = Path::new(&i).extension().expect("Failed to get extension of the file").to_str().expect("Failed to convert path to &str");
                 let new_name = stem_name.to_string() + "." + &formatted_time + "." + ext;
                 let new = format!("{}", trash_dir.join(new_name).display());
                 // println!("pwd: {}", current_dir().unwrap().to_str().unwrap());
                 // println!("target: {}", &new);
                 fs::rename(i, &new)?;
             } else {
+                trace!("Hello from else block\n");
+                let trash_file = trash_dir.join(&i);
+                trace!("file: {}", &i.display());
+                trace!("trash_file: {}", &trash_file.display());
                 // println!("pwd: {}", current_dir().unwrap().to_str().unwrap());
                 // println!("target: {}", &trash_dir.join(&i).display());
-                fs::rename(&i, trash_dir.join(&i))?;
+                let file = current_dir().expect("Failed to get PWD").join(&i);
+                trace!("{}", &file.display());
+                fs::rename(&file, trash_file).expect("Err while trashing");
             }
         } else {
             eprintln!(

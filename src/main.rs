@@ -1,9 +1,11 @@
 use clap::{Parser, Subcommand};
+use log::trace;
 use std::path::PathBuf;
 
 pub mod core;
 pub mod garbage_collection;
 pub mod history;
+pub mod utils;
 
 use core::{recursive_remove, remove_file};
 use garbage_collection::gc;
@@ -43,9 +45,11 @@ enum Commands {
 }
 
 fn main() {
+    env_logger::init();
     let cli = Cli::parse();
 
     if let Some(file) = cli.file {
+        trace!("{:#?}", &file);
         remove_file(file).unwrap();
     }
 

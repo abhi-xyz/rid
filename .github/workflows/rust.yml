@@ -14,10 +14,11 @@ jobs:
 
     runs-on: ubuntu-latest
     strategy:
-      toolchain:
-        - stable
-        - beta
-        - nightly
+      matrix:
+        toolchain:
+          - stable
+          - beta
+          - nightly
 
     steps:
     - uses: actions/checkout@v4

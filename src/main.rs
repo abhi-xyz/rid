@@ -1,9 +1,13 @@
-use std::ops::Deref;
 use std::path::PathBuf;
 use clap::{Parser, Subcommand};
-use rid::garbage_collection::gc;
-use rid::history::write_history;
-use rid::{recursive_remove, remove_file};
+
+pub mod core;
+pub mod garbage_collection;
+pub mod history;
+
+use core::{recursive_remove, remove_file};
+use garbage_collection::gc;
+use history::write_history;
 
 #[derive(Parser)]
 #[command(version, about, long_about = "By default, rid does not remove directories. Use the --recursive (-r) option to remove each listed directory, too, along with all of its contents.")]

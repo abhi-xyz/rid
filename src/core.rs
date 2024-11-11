@@ -6,6 +6,13 @@ use std::{fs, path};
 use chrono::Local;
 use dirs::data_local_dir;
 
+/*
+FIX: can't remove items from hidden dirs
+rid .github/workflows/release.yml
+thread 'main' panicked at src/main.rs:41:27:
+called `Result::unwrap()` on an `Err` value: Os { code: 2, kind: NotFound, message: "No such file or directory" }
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+*/
 pub fn remove_file(file: Vec<PathBuf>) -> Result<(), Box<dyn Error>> {
     for i in file {
         let p = path::Path::new(&i).exists();

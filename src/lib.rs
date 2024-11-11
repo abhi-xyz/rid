@@ -1,4 +1,2 @@
 #[allow(dead_code)]
-pub fn core() {
-    
-}
+pub fn core() {}

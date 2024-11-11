@@ -1,13 +1,13 @@
+use chrono::{DateTime, Utc};
 use std::error::Error;
 use std::time::{Duration, UNIX_EPOCH};
 use std::vec;
-use chrono::{DateTime, Utc};
 
 #[allow(dead_code)]
 #[derive(Debug)]
 struct Trash {
     file: String,
-    date: i64
+    date: i64,
 }
 
 pub trait Metadata {
@@ -71,29 +71,21 @@ pub fn gc(_date: &i8) -> Result<(), Box<dyn Error>> {
 }
 
 fn get_items_for_gc(period: Option<u8>) -> Vec<u64> {
-    let b =  period.is_none();
+    let b = period.is_none();
     if b {
         println!("no time period specifed:\nconsidering 30 as default\ncleaning all files and dirs in trash for longer than 30 days");
     } else {
         println!("considering 30 as default\ncleaning all files and dirs in trash for longer than 30 days");
     }
-        
-    let mut access_time_vec: Vec<u64> = vec![
-        20241101064906,
-        20241101064907,
-        20241101064905
-    ];
+
+    let mut access_time_vec: Vec<u64> = vec![20241101064906, 20241101064907, 20241101064905];
     access_time_vec.sort();
     println!("sorted from vec: {:#?}", access_time_vec);
     access_time_vec
 }
 
 fn sort_by_date() {
-    let mut access_time: [u64; 3] = [
-        20241101064906,
-        20241101064907,
-        20241101064905
-    ];
+    let mut access_time: [u64; 3] = [20241101064906, 20241101064907, 20241101064905];
     access_time.sort();
     println!("sorted from slice: {:#?}", access_time);
 }
@@ -102,10 +94,10 @@ fn convert_system_time(tv_sec: u64, tv_nsec: u32) -> String {
     let duration = Duration::new(tv_sec, tv_nsec);
     let _datetime = UNIX_EPOCH + duration;
     let naive_datetime = DateTime::from_timestamp(tv_sec as i64, tv_nsec).unwrap();
-    let datetime: DateTime<Utc> = DateTime::from_naive_utc_and_offset(naive_datetime.naive_utc(), Utc);
+    let datetime: DateTime<Utc> =
+        DateTime::from_naive_utc_and_offset(naive_datetime.naive_utc(), Utc);
     datetime.format("%Y-%m-%d %H:%M:%S.%f").to_string()
 }
 
 #[allow(dead_code)]
-pub fn dry_run() {
-}
+pub fn dry_run() {}

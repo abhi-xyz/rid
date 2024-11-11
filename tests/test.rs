@@ -1,7 +1,7 @@
 #[cfg(test)]
 mod tests {
 
-    #[test] 
+    #[test]
     fn glob_test() {
         println!("Tests");
     }

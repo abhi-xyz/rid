@@ -1,5 +1,5 @@
-use std::path::PathBuf;
 use clap::{Parser, Subcommand};
+use std::path::PathBuf;
 
 pub mod core;
 pub mod garbage_collection;
@@ -10,14 +10,18 @@ use garbage_collection::gc;
 use history::write_history;
 
 #[derive(Parser)]
-#[command(version, about, long_about = "By default, rid does not remove directories. Use the --recursive (-r) option to remove each listed directory, too, along with all of its contents.")]
+#[command(
+    version,
+    about,
+    long_about = "By default, rid does not remove directories. Use the --recursive (-r) option to remove each listed directory, too, along with all of its contents."
+)]
 struct Cli {
     /// Remove files
     file: Option<Vec<PathBuf>>,
     /// Remove directories and their contents recursively
     #[arg(short, long, value_name = "FILE")]
     recursive: Option<Vec<PathBuf>>,
- 
+
     #[arg(short, long)]
     json: Option<bool>,
 
@@ -50,7 +54,7 @@ fn main() {
     }
     if let Some(t) = cli.json {
         if t {
-        write_history().unwrap();
+            write_history().unwrap();
         } else {
             println!("try true");
         }
@@ -68,5 +72,3 @@ fn main() {
         None => {}
     }
 }
-
-

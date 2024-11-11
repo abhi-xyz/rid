@@ -3,21 +3,21 @@
     : convert string arguments to vector
 */
 
+use chrono::Local;
+use serde::{Deserialize, Serialize};
 use std::error::Error;
 use std::fs::File;
 use std::io::BufReader;
-use chrono::Local;
-use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Serialize, Deserialize)]
 struct Hist {
     id: String,
-    item: Vec<HistoryItems>
+    item: Vec<HistoryItems>,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
 struct HistoryItems {
-  //  id: u64,
+    //  id: u64,
     from: String,
     to: String,
 }
@@ -32,9 +32,8 @@ pub fn write_history_as_json() -> Result<(), Box<dyn Error>> {
 fn test_function_01() {
     let c_time = Local::now();
     let formatted_time = c_time.format("%Y-%m-%d_%H:%M:%S").to_string();
-    println!("{}", formatted_time);    
+    println!("{}", formatted_time);
 }
-
 
 // https://thelinuxcode.com/rust-json-example/
 pub fn write_history() -> Result<(), Box<dyn Error>> {
@@ -42,14 +41,14 @@ pub fn write_history() -> Result<(), Box<dyn Error>> {
     // let contents = fs::read_to_string(hist_file)?;
     let file = File::open("rid_history.json").expect("where is the rid_history.json file?");
     let reader = BufReader::new(file);
-    let history_from_json: HistoryItems = serde_json::from_reader(reader).expect("reader failed to read the json data");
+    let history_from_json: HistoryItems =
+        serde_json::from_reader(reader).expect("reader failed to read the json data");
 
     // let json: serde_json::Value = serde_json::from_str(&contents).expect("JSON was not well-formatted");
     // println!("got this:\n{}", json);
     println!("got this:\n{:?}", history_from_json);
     println!("from: {}", history_from_json.from);
     println!("to: {}", history_from_json.to);
-
 
     /*
     let hist = HistoryItems {
@@ -71,5 +70,3 @@ pub fn write_history() -> Result<(), Box<dyn Error>> {
     */
     Ok(())
 }
-
-

@@ -49,7 +49,7 @@ jobs:
     - name: Install ${{ matrix.toolchain }}
       uses: dtolnay/rust-toolchain@master
       with:
-      toolchain: ${{ matrix.toolchain }}
+        toolchain: ${{ matrix.toolchain }}
     - name: Configure Rustup
       run: rustup target add ${{ matrix.target }}
     - name: Checkout

@@ -55,7 +55,7 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v4
     - name: Build
-      run: cargo build --release --features vers --target ${{ matrix.target }}
+      run: cargo build --release --target ${{ matrix.target }}
     - name: Package
       shell: bash
       run: |

@@ -3,7 +3,6 @@ use std::error::Error;
 use std::path::{Path, PathBuf};
 use std::{fs, path};
 use chrono::Local;
-use clap::builder::Str;
 use dirs::data_local_dir;
 use log::trace;
 
@@ -27,12 +26,14 @@ fish: Job 1, 'rid fsdsdfd' terminated by signal SIGABRT (Abort)
 
 */
 
+#[allow(dead_code)]
 #[derive(Debug)]
 struct Trash {
     // id: i32,
     field: PathBuf,
 }
 
+#[allow(dead_code)]
 impl Trash {
     fn is_dir() {
         
@@ -53,6 +54,20 @@ impl Trash {
 ///
 /// # Note
 /// - It wont check whether the path exists or not
+///
+/// # Example
+///
+/// ```
+/// match split_path_and_file(&i) {
+///     Ok((p, s)) => {
+///         println!("Got prefix: {p}");
+///         println!("Got suffix: {s}");
+///         }
+///     Err(_) => {
+///        continue;
+///        }
+///     }
+/// ```
 pub fn split_path_and_file(path: &Path) -> Result<(String, String), Box<dyn Error>> {
     match path.to_str().unwrap().rsplit_once("/") {
         Some((prefix, suffix)) => {
@@ -65,6 +80,12 @@ pub fn split_path_and_file(path: &Path) -> Result<(String, String), Box<dyn Erro
             Err("Delimiter '/' not found in the path".into())
         }
     }
+}
+
+#[deny(missing_docs)]
+#[allow(dead_code)]
+pub fn trash_name() {
+    
 }
 
 
@@ -88,6 +109,7 @@ pub fn remove_file(file: Vec<PathBuf>) -> Result<(), Box<dyn Error>> {
                     continue;
                 }
             }
+            
             //
             let absolute_path = &i.to_str().unwrap().rsplit_once("/").expect("Error while extracting path");
             trace!("file name: {}", absolute_path.0);
@@ -95,11 +117,7 @@ pub fn remove_file(file: Vec<PathBuf>) -> Result<(), Box<dyn Error>> {
             let trash_dir = trash_dir();
             if trash_dir.join(&i).exists() {
                 trace!("Hello from if block\n");
-                //let c_time = Local::now();
-                //trace!("{}", &c_time);
-                //let formatted_time = c_time.format("%Y-%m-%d_%H:%M:%S").to_string();
                 let formatted_time = current_time().format("%Y-%m-%d_%H:%M:%S").to_string();
-                trace!("{}", &formatted_time);
                 let stem_name = Path::new(&i).file_stem().expect("Failed to get stem name of the file").to_str().expect("Failed to convert path to &str");
                 let ext = Path::new(&i).extension().expect("Failed to get extension of the file").to_str().expect("Failed to convert path to &str");
                 let new_name = stem_name.to_string() + "." + &formatted_time + "." + ext;

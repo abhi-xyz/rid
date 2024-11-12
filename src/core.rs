@@ -1,9 +1,6 @@
 use std::error::Error;
 use std::path::{Path, PathBuf};
 use std::{fs, path};
-use chrono::Local;
-use dirs::data_local_dir;
-use log::trace;
 
 use crate::utils::{current_time, trash_dir};
 
@@ -55,8 +52,6 @@ pub fn remove_file(files: Vec<PathBuf>) -> Result<(), Box<dyn Error>> {
                 file: file.as_path(),
             };
             let trash_name = trash_dir().join(trash.trash_name());
-            println!("This is what rid got: {}", &file.display());
-            println!("This is where rid sent: {}", &trash_name.display());
             fs::rename(file, trash_name).unwrap();
 
         } else {
@@ -69,93 +64,29 @@ pub fn remove_file(files: Vec<PathBuf>) -> Result<(), Box<dyn Error>> {
     }
     Ok(())
 }
-/// Splits the given `&Path` into directory path (prefix) and file name (suffix).
-///
-/// # Arguments
-/// - `path`: A referance to `Path` containing the path to be split.
-///
-/// # Returns
-/// - `Ok((String, String))`: A tuple containing the directory path and file name as `String`s
-/// - `Err(Box<dyn Error>)`: An error if the delimiter `/` is not found or the path conversion fails. Which means the path only contains file name.
-///
-/// # Note
-/// - It wont check whether the path exists or not
-///
-/// # Example
-///
-/// ```
-/// match split_path_and_file(&i) {
-///     Ok((p, s)) => {
-///         println!("Got prefix: {p}");
-///         println!("Got suffix: {s}");
-///         }
-///     Err(_) => {
-///        continue;
-///        }
-///     }
-/// ```
-pub fn split_path_and_file(path: &Path) -> Result<(String, String), Box<dyn Error>> {
-    match path.to_str().unwrap().rsplit_once("/") {
-        Some((prefix, suffix)) => {
-            trace!("Prefix: {}", prefix);
-            trace!("Sufix: {}", suffix);
-            Ok((prefix.to_string(), suffix.to_string()))
-        }
-        None => {
-            log::info!("Delimiter '/' not found in the string.");
-            Err("Delimiter '/' not found in the path".into())
-        }
-    }
-}
 
-
-pub fn recursive_remove(dir: Vec<PathBuf>) -> Result<(), Box<dyn Error>> {
-    for i in dir {
-        let p = path::Path::new(&i).exists();
-        if p {
-            let trash_dir = data_local_dir()
-                .expect("Failed to get local data directory")
-                .join("Trash/files")
-                .join(&i);
-            if trash_dir.exists() {
-                let c_time = Local::now();
-                let formatted_time = c_time.format("%Y-%m-%d_%H:%M:%S").to_string();
-                let file_name = Path::new(&trash_dir)
-                    .file_name()
-                    .expect("Failed to extract file names from Trash");
-                let new_trash_path = data_local_dir()
-                    .expect("Failed to get local data directory")
-                    .join("Trash/files")
-                    .join(file_name);
-                let new_name = format!("{}.{}", &new_trash_path.display(), &formatted_time);
-                eprintln!(
-                    "rid: {} already exists\nTrashed as {}",
-                    &trash_dir.display(),
-                    &new_name
-                );
-                fs::rename(i, new_name)?;
-            } else {
-                fs::rename(i, &trash_dir)?;
-            }
-            trash_dir.to_str().unwrap().to_string()
+pub fn recursive_remove(dirs: Vec<PathBuf>) -> Result<(), Box<dyn Error>> {
+    for dir in dirs {
+        let path = path::Path::new(&dir).exists();
+        if path {
+            let trash = Trash {
+                file: dir.as_path(),
+            };
+            let trash_name = trash_dir().join(trash.trash_name());
+            fs::rename(dir, trash_name).unwrap();
         } else {
-            eprintln!(
-                "rid: cannot remove '{}': No such file or directory",
-                &i.display()
+            println!(
+                "rid: cannot remove '{}': no such file or directory",
+                &dir.display()
             );
             return Ok(());
-        };
+        }
     }
     Ok(())
 }
 
-/*
-TEST: file.txt
-TEST: .file.txt
-TEST: some/dir/file.txt
-TEST: .some/dir/file.txt
-*/
-
+// TEST:
+//
 #[cfg(test)]
 mod tests {
     use std::fs;

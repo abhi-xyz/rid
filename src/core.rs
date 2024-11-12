@@ -1,4 +1,3 @@
-use std::env::current_dir;
 use std::error::Error;
 use std::path::{Path, PathBuf};
 use std::{fs, path};
@@ -8,41 +7,68 @@ use log::trace;
 
 use crate::utils::{current_time, trash_dir};
 
-/*
-FIX: can't remove items from hidden dirs
-rid .github/workflows/release.yml
-thread 'main' panicked at src/main.rs:41:27:
-called `Result::unwrap()` on an `Err` value: Os { code: 2, kind: NotFound, message: "No such file or directory" }
-note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
-
-abhi@nixos ~> touch fsdsdfd
-abhi@nixos ~> rid fsdsdfd  NOTE: worked here since there where no need to extract stem and extension 
-abhi@nixos ~> touch fsdsdfd
-abhi@nixos ~> rid fsdsdfd                    
-thread 'main' panicked at src/core.rs:31:53:  NOTE: failed cuz of extraction
-called `Option::unwrap()` on a `None` value
-note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
-fish: Job 1, 'rid fsdsdfd' terminated by signal SIGABRT (Abort)
-
-*/
-
-#[allow(dead_code)]
 #[derive(Debug)]
-struct Trash {
+struct Trash<'a> {
     // id: i32,
-    field: PathBuf,
+    file: &'a Path,
 }
 
-#[allow(dead_code)]
-impl Trash {
-    fn is_dir() {
-        
-    }
-    fn is_file() {
-        todo!();
+impl<'a> Trash<'a> {
+    fn trash_name(&self) -> String {
+        let trash_file = trash_dir().join(self.file);
+        let formatted_time = current_time().format("%Y-%m-%d_%H:%M:%S").to_string();
+        println!("{:?}", trash_file.display());
+        let trash_file = trash_file.try_exists().expect("Err");
+        if !trash_file {
+            println!("trash_file_name: {}", self.file.file_name().unwrap().to_str().unwrap());
+            self.file.file_name().unwrap().to_str().unwrap().to_string()
+        } else {
+            let file_name = self.file.file_name().unwrap();
+           // println!("This is file name ?:{:?}", file_name);
+            let stem_name = path::Path::new(file_name).file_stem().expect("failed to get file name").to_str().unwrap().to_string();
+            if let Some(ext) = self.file.extension() {
+                println!("Got {:?}", &ext);
+                let ext = ext.to_str().unwrap().to_string();
+                let n = stem_name + "." + &formatted_time + "." + &ext;
+                let trash_file = self.file.with_file_name(n);
+                println!("New trash_name: {}", &trash_file.display());
+                let p = trash_file.as_path();
+                self.file.with_file_name(p).to_str().unwrap().to_string()
+            } else {
+                println!("No etention");
+                let n = stem_name + "." + &formatted_time;
+                self.file.with_file_name(n).to_str().unwrap().to_string()
+            }
+        }
     }
 }
 
+pub fn remove_file(files: Vec<PathBuf>) -> Result<(), Box<dyn Error>> {
+    for file in files {
+        if file.is_dir() {
+            eprintln!("{} is a directory.\nTry: rid -r", file.display());
+            return Ok(());
+        }
+        let path = path::Path::new(&file).exists();
+        if path {
+            let trash = Trash {
+                file: file.as_path(),
+            };
+            let trash_name = trash_dir().join(trash.trash_name());
+            println!("This is what rid got: {}", &file.display());
+            println!("This is where rid sent: {}", &trash_name.display());
+            fs::rename(file, trash_name).unwrap();
+
+        } else {
+            eprintln!(
+                "rid: cannot remove '{}': no such file or directory",
+                &file.display()
+            );
+            return Ok(());
+        }
+    }
+    Ok(())
+}
 /// Splits the given `&Path` into directory path (prefix) and file name (suffix).
 ///
 /// # Arguments
@@ -82,70 +108,7 @@ pub fn split_path_and_file(path: &Path) -> Result<(String, String), Box<dyn Erro
     }
 }
 
-#[deny(missing_docs)]
-#[allow(dead_code)]
-pub fn trash_name() {
-    
-}
 
-
-pub fn remove_file(file: Vec<PathBuf>) -> Result<(), Box<dyn Error>> {
-    trace!("Hello from remove_file function");
-    for i in file {
-        trace!("i in files: {:#?}", &i);
-        let p = path::Path::new(&i).exists();
-        if i.is_dir() {
-            eprintln!("{} is a directory.\nTry: rid -r", i.display());
-            return Ok(());
-        }
-        if p {
-            //
-            match split_path_and_file(&i) {
-                Ok((p, s)) => {
-                    println!("Got prefix: {p}");
-                    println!("Got suffix: {s}");
-                }
-                Err(_) => {
-                    continue;
-                }
-            }
-            
-            //
-            let absolute_path = &i.to_str().unwrap().rsplit_once("/").expect("Error while extracting path");
-            trace!("file name: {}", absolute_path.0);
-            trace!("path: {}", absolute_path.1);
-            let trash_dir = trash_dir();
-            if trash_dir.join(&i).exists() {
-                trace!("Hello from if block\n");
-                let formatted_time = current_time().format("%Y-%m-%d_%H:%M:%S").to_string();
-                let stem_name = Path::new(&i).file_stem().expect("Failed to get stem name of the file").to_str().expect("Failed to convert path to &str");
-                let ext = Path::new(&i).extension().expect("Failed to get extension of the file").to_str().expect("Failed to convert path to &str");
-                let new_name = stem_name.to_string() + "." + &formatted_time + "." + ext;
-                let new = format!("{}", trash_dir.join(new_name).display());
-                // println!("pwd: {}", current_dir().unwrap().to_str().unwrap());
-                // println!("target: {}", &new);
-                fs::rename(i, &new)?;
-            } else {
-                trace!("Hello from else block\n");
-                let trash_file = trash_dir.join(&i);
-                trace!("file: {}", &i.display());
-                trace!("trash_file: {}", &trash_file.display());
-                // println!("pwd: {}", current_dir().unwrap().to_str().unwrap());
-                // println!("target: {}", &trash_dir.join(&i).display());
-                let file = current_dir().expect("Failed to get PWD").join(&i);
-                trace!("{}", &file.display());
-                fs::rename(&file, trash_file).expect("Err while trashing");
-            }
-        } else {
-            eprintln!(
-                "rid: cannot remove '{}': No such file or directory",
-                &i.display()
-            );
-            return Ok(());
-        };
-    }
-    Ok(())
-}
 pub fn recursive_remove(dir: Vec<PathBuf>) -> Result<(), Box<dyn Error>> {
     for i in dir {
         let p = path::Path::new(&i).exists();
@@ -170,13 +133,8 @@ pub fn recursive_remove(dir: Vec<PathBuf>) -> Result<(), Box<dyn Error>> {
                     &trash_dir.display(),
                     &new_name
                 );
-                // println!("pwd: {}", current_dir().unwrap().to_str().unwrap());
-                // println!("target: {}", &new_name);
                 fs::rename(i, new_name)?;
             } else {
-                // moves the file or dir to trash with same name.
-                println!("pwd: {}", current_dir().unwrap().to_str().unwrap());
-                println!("target: {}", &trash_dir.display());
                 fs::rename(i, &trash_dir)?;
             }
             trash_dir.to_str().unwrap().to_string()
@@ -190,6 +148,13 @@ pub fn recursive_remove(dir: Vec<PathBuf>) -> Result<(), Box<dyn Error>> {
     }
     Ok(())
 }
+
+/*
+TEST: file.txt
+TEST: .file.txt
+TEST: some/dir/file.txt
+TEST: .some/dir/file.txt
+*/
 
 #[cfg(test)]
 mod tests {
@@ -240,7 +205,50 @@ mod tests {
             assert!(!fs::exists(i).expect("Can't check existence of file tmp_file.txt"));
         }
     }
-
+    #[test]
+    fn single_hidden_file_test() {
+        let v0 = PathBuf::from(".tmp_hidden_file_for_single_file_text01.txt");
+        let v1 = PathBuf::from(".tmp_hidden_file_for_single_file_text02.txt");
+        let v2 = PathBuf::from(".tmp_hidden_file_for_single_file_text03.txt");
+        let v3 = PathBuf::from(".tmp_hidden_file_for_single_file_text04.txt");
+        let single_files = vec![v0, v1, v2, v3];
+        for i in &single_files {
+            fs::write(i, "some contents for the files").expect("Cant create files");
+            assert!(fs::exists(i).expect("Can't check existence of file tmp_file.txt"));
+        }
+        remove_file(single_files.clone()).unwrap();
+        for i in &single_files {
+            assert!(!fs::exists(i).expect("Can't check existence of file tmp_file.txt"));
+        }
+    }
+    #[test]
+    fn remove_file_from_dir_test() {
+        let s = Path::new("some_other").exists();
+        if s {
+            remove_dir_all("some_other").unwrap();
+        }
+        fs::create_dir_all("some_other/dir").unwrap();
+        fs::write("some_other/dir/test.txt", "some contents for testing").unwrap();
+        let v3 = PathBuf::from("some_other/dir/test.txt");
+        let single_files = vec![v3];
+        remove_file(single_files).expect("Err with my function");
+        assert!(!fs::exists("some_other/dir/test.txt").expect("Can't check existence of file some/dir/for/testing/tmp_file.txt"));
+        assert!(fs::exists("some_other").expect("Can't check existence of file some/dir/for/testing/tmp_file.txt"));
+    }
+    #[test]
+    fn remove_file_from_hidden_dir_test() {
+        let s = Path::new(".some_hidden").exists();
+        if s {
+            remove_dir_all(".some_hidden").unwrap();
+        }
+        fs::create_dir_all(".some_hidden/dir").unwrap();
+        fs::write(".some_hidden/dir/test.txt", "some contents for testing").unwrap();
+        let v3 = PathBuf::from(".some_hidden/dir/test.txt");
+        let single_files = vec![v3];
+        remove_file(single_files).expect("Err with my function");
+        assert!(!fs::exists(".some_hidden/dir/test.txt").expect("Can't check existence of file some/dir/for/testing/tmp_file.txt"));
+        assert!(fs::exists(".some_hidden").expect("Can't check existence of file some/dir/for/testing/tmp_file.txt"));
+    }
     #[test]
     fn recursive_remove_test() {
         let s = Path::new("some").exists();
@@ -256,6 +264,23 @@ mod tests {
         assert!(!fs::exists("some/dir/for")
             .expect("Can't check existence of file some/dir/for/testing/tmp_file.txt"));
         assert!(!fs::exists("some/dir/for/testing")
+            .expect("Can't check existence of file some/dir/for/testing/tmp_file.txt"));
+    }
+    #[test]
+    fn recursive_hidden_dir_remove_test() {
+        let s = Path::new(".some").exists();
+        if s {
+            remove_dir_all(".some").unwrap();
+        }
+        fs::create_dir_all(".some/dir/for/testing").unwrap();
+        let test_dir = vec![PathBuf::from(".some")];
+        fs::write(".some/test.txt", "some contents for testing").unwrap();
+        recursive_remove(test_dir).expect("Err with my function");
+        assert!(!fs::exists(".some")
+            .expect("Can't check existence of file some/dir/for/testing/tmp_file.txt"));
+        assert!(!fs::exists(".some/dir/for")
+            .expect("Can't check existence of file some/dir/for/testing/tmp_file.txt"));
+        assert!(!fs::exists(".some/dir/for/testing")
             .expect("Can't check existence of file some/dir/for/testing/tmp_file.txt"));
     }
 }

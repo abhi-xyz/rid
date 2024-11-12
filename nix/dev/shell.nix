@@ -10,7 +10,6 @@ with pkgs; mkShell {
     eza
     unstable.neovim
     fd
-    unstable.clippy
     unstable.rustup
     rust-bin.stable.latest.default
   ];

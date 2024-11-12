@@ -90,6 +90,7 @@ fn sort_by_date() {
     println!("sorted from slice: {:#?}", access_time);
 }
 
+#[allow(dead_code)]
 fn convert_system_time(tv_sec: u64, tv_nsec: u32) -> String {
     let duration = Duration::new(tv_sec, tv_nsec);
     let _datetime = UNIX_EPOCH + duration;

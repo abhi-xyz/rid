@@ -14,8 +14,16 @@ use history::write_history;
 #[derive(Parser)]
 #[command(
     version,
-    about,
-    long_about = "By default, rid does not remove directories. Use the --recursive (-r) option to remove each listed directory, too, along with all of its contents."
+    name = "rid",
+    author = "Abhinandh S <ugabhi@proton.me>",
+    about = "rid",
+    long_about = "By default, rid does not remove directories.\nUse the --recursive (-r) option to remove each listed directory, too, along with all of its contents.\nTo remove a file whose name starts with a '-', for example '-foo',\n
+    use one of these commands:\n
+    rid -- -foo\n
+    rid ./-foo\n
+    If you use rid to remove a file, it might be possible to recover the file/directory.\nFiles are trashed to XDG specified trash directory.\n
+    Example:\n
+    `$HOME`/.local/share/Trash/files\n"
 )]
 struct Cli {
     /// Remove files
@@ -24,6 +32,7 @@ struct Cli {
     #[arg(short, long, value_name = "FILE")]
     recursive: Option<Vec<PathBuf>>,
 
+    /// For testing porpose wont work
     #[arg(short, long)]
     json: Option<bool>,
 
@@ -38,6 +47,7 @@ enum Commands {
         #[arg(short, long)]
         list: bool,
     },
+    /// alpha stage
     Gc {
         // #[arg(short, long)]
         date: i8,

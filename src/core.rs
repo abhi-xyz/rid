@@ -85,8 +85,7 @@ pub fn recursive_remove(dirs: Vec<PathBuf>) -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
-// TEST:
-//
+//  TEST:
 #[cfg(test)]
 mod tests {
     use std::fs;

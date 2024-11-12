@@ -1,8 +1,8 @@
 [package]
 name = "rid"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
-description = "rm"
+description = "rid a safe alternative to rm"
 
 [dependencies]
 chrono = "0.4.38"

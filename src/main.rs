@@ -17,13 +17,15 @@ use history::write_history;
     name = "rid",
     author = "Abhinandh S <ugabhi@proton.me>",
     about = "rid",
-    long_about = "By default, rid does not remove directories.\nUse the --recursive (-r) option to remove each listed directory, too, along with all of its contents.\nTo remove a file whose name starts with a '-', for example '-foo',\n
-    use one of these commands:\n
-    rid -- -foo\n
-    rid ./-foo\n
-    If you use rid to remove a file, it might be possible to recover the file/directory.\nFiles are trashed to XDG specified trash directory.\n
-    Example:\n
-    `$HOME`/.local/share/Trash/files\n"
+    long_about = "By default, rid does not remove directories.Use the --recursive (-r) option to remove each listed directory, too, along with all of its contents.\n
+        To remove a file whose name starts with a '-', for example '-foo',\n
+        use one of these commands:\n
+        rid -- -foo\n
+        rid ./-foo\n
+        If you use rid to remove a file, it might be possible to recover the file/directory.\n
+        Files are trashed to XDG specified trash directory.\n
+        Example:\n
+        `$HOME`/.local/share/Trash/files\n"
 )]
 struct Cli {
     /// Remove files
@@ -31,6 +33,10 @@ struct Cli {
     /// Remove directories and their contents recursively
     #[arg(short, long, value_name = "FILE")]
     recursive: Option<Vec<PathBuf>>,
+
+    /// Enable verbose output
+    #[arg(short, long)]
+    verbose: bool,
 
     /// For testing porpose wont work
     #[arg(short, long)]
@@ -58,13 +64,20 @@ fn main() {
     env_logger::init();
     let cli = Cli::parse();
 
+    // Initialize logging based on verbosity flag
+    if cli.verbose {
+        trace!("verbose enabled");
+    } else {
+        trace!("verbose disabled");
+    }
+
     if let Some(file) = cli.file {
         trace!("{:#?}", &file);
-        remove_file(file).unwrap();
+        remove_file(file, cli.verbose).unwrap();
     }
 
     if let Some(path) = cli.recursive {
-        recursive_remove(path).unwrap();
+        recursive_remove(path, cli.verbose).unwrap();
     }
     if let Some(t) = cli.json {
         if t {

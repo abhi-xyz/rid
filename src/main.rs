@@ -3,7 +3,8 @@ use log::trace;
 use rid::core::{recursive_remove, remove_file};
 use rid::garbage_collection::gc;
 use rid::history::write_history;
-use std::path::PathBuf;
+use std::fs::remove_dir_all;
+use std::path::{self, Path, PathBuf};
 use rid::revert::read_json_history;
 
 #[derive(Parser)]
@@ -28,6 +29,10 @@ struct Cli {
     /// Remove directories and their contents recursively
     #[arg(short, long, value_name = "FILE")]
     recursive: Option<Vec<PathBuf>>,
+
+    /// Remove directories and their contents recursively
+    #[arg(short, long, value_name = "FILE")]
+    force: Option<Vec<PathBuf>>,
 
     /// Enable verbose output
     #[arg(short, long)]
@@ -74,6 +79,16 @@ fn main() {
         remove_file(file, cli.verbose).unwrap();
     }
 
+    if let Some(forece_file) = cli.force {
+        for i in forece_file {
+            if Path::new(&i).exists() {
+                remove_dir_all(i).unwrap();
+            } else {
+                println!("Path didnt exists");
+            }
+        }
+    }
+    
     if let Some(path) = cli.recursive {
         recursive_remove(path, cli.verbose).unwrap();
     }

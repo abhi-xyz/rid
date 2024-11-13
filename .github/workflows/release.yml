@@ -18,6 +18,10 @@ jobs:
           - beta
           - nightly
     steps:
+      - name: Install dependencies
+        run: |
+          # python -m pip install --upgrade pip
+          sudo apt install vim
       - uses: actions/checkout@v4
       - run: rustup update ${{ matrix.toolchain }} && rustup default ${{ matrix.toolchain }}
       - run: cargo build --verbose

@@ -1,17 +1,14 @@
-name: Cargo Build & Test
+name: Build, bump tag version and release
 
 on:
   push:
     branches:
       - master
 
-env: 
-  CARGO_TERM_COLOR: always
-
 jobs:
   release:
     name: Build and Release
-    run-on: ubuntu-latest
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -31,6 +28,7 @@ jobs:
           asset_name: alemanes-linux-amd64
           tag: ${{ steps.bump_version.outputs.new_tag }}
           overwrite: true
+
   # build_and_test:
   #   name: Rust project - latest
   #   runs-on: ubuntu-latest

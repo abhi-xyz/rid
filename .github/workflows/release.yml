@@ -7,14 +7,14 @@ on:
 
 jobs:
   release:
-  runs-on: ubuntu-latest
-  steps:
-    - uses: actions/checkout@v3
-    - uses: manoadamro/rust-release@v1
-      with:
-        owner: ${{ github.repository_owner }}
-        repo: ${{ github.repository }}
-        token: ${{ secrets.GITHUB_TOKEN }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: manoadamro/rust-release@v1
+        with:
+          owner: ${{ github.repository_owner }}
+          repo: ${{ github.repository }}
+          token: ${{ secrets.GITHUB_TOKEN }}
  # build_and_test:
   #   name: Rust project - latest
   #   runs-on: ubuntu-latest

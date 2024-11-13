@@ -73,7 +73,7 @@ sudo nixos-rebuild switch --flake .
 ```
 
 ## known bugs
-- 
+- ~~golb pattern isn't working~~
 
 ## Planned Features
 - rid --revert:  Restores files from the trash directory to their original location.

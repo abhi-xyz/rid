@@ -30,7 +30,6 @@ impl FromStr for LogId {
     }
 }
 
-
 /// # Returns the path to the user's local trash directory.
 ///
 /// The returned value depends on the operating system and is either a `Some`, containing a value from the following table, or a `None`.
@@ -51,6 +50,8 @@ pub fn trash_dir() -> PathBuf {
 /// # Example
 ///
 /// ```
+/// use rid::utils::current_time;
+///
 /// let formatted_time = current_time().format("%Y-%m-%d_%H:%M:%S").to_string();
 /// ```
 pub fn current_time() -> DateTime<Local> {
@@ -74,13 +75,17 @@ pub fn current_time() -> DateTime<Local> {
 /// # Example
 ///
 /// ```
+/// use rid::utils::split_path_and_file;
+/// use std::path::Path;
+///
+/// let i = Path::new("test.txt");
 /// match split_path_and_file(&i) {
 ///     Ok((p, s)) => {
 ///         println!("Got prefix: {p}");
 ///         println!("Got suffix: {s}");
 ///         }
 ///     Err(_) => {
-///        continue;
+///         println!("can't split");
 ///        }
 ///     }
 /// ```

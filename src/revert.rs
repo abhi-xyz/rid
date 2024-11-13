@@ -1,9 +1,8 @@
 use std::error::Error;
-use std::fs::{self, OpenOptions};
+use std::fs::{self, rename, OpenOptions};
 use std::io::{BufRead, BufReader, Write};
+use std::path::Path;
 use std::vec;
-
-use crate::utils::{current_time, LogId};
 
 #[derive(Debug, Clone, PartialEq, PartialOrd)]
 pub struct TrashHistory {
@@ -39,34 +38,49 @@ pub fn write_log(
 }
 
 pub fn read_json_history() -> Result<(), Box<dyn Error>> {
-    println!("hello from revert");
-    let file = fs::File::open("/home/abhi/.local/share/rid/rid_history.log").unwrap();
+    let file = fs::File::open("/home/abhi/.local/share/rid/rid_history.log")?;
     let reader = BufReader::new(file);
 
-    let mut a_vec = vec::Vec::new();
+    let mut a_vec: Vec<String> = vec::Vec::new();
     for line in reader.lines() {
-       let l = line.unwrap();
-        a_vec.push(l.clone());
-       // println!("{}", &l);
+        let line = line?;
+        a_vec.push(line);
     }
-     println!("{:#?}", &a_vec);
-    let len = a_vec.len();
-        let se = &a_vec[len-1]; // last one
-     println!("FROM VEC: {:#?}", se);
-     //let v = a_vec.rsplit(pred)
-        
-    //
-    //
-    let c_time = current_time();
-    let id = c_time.format("%Y%m%d%H%M%S").to_string();
-    let id = id.as_str();
-    println!("{}", &id);
-    let log_id: LogId = id.parse().unwrap();
-    println!("{:#?}", log_id);
-    //
-    //
-
-
-
+    revert(a_vec.iter().nth_back(2).unwrap().to_string(), a_vec.iter().nth_back(3).unwrap().to_string())?;
     Ok(())
+}
+
+fn revert(from: String, to: String) -> Result<(), Box<dyn Error>> {
+    if !Path::new(&from).exists() {
+        println!("File Doesn't Exist in Trash dir");
+    } else {
+        rename(from, to)?;    
+    }
+    Ok(())
+}
+
+#[cfg(test)]
+mod test {
+    #[test]
+    fn get_last_log() {
+
+        #[allow(clippy::useless_vec)]
+        let dummy_log = vec![
+            "-------------",
+            "-------------",
+            "-------------",
+            "-------------",
+            "-------------",
+            "20241112214434",
+            "/home/abhi/projects/abhi/github/rid/file004.org",
+            "/home/abhi/.local/share/Trash/files/file004.2024-11-12_21:44:34.org",
+            "20241112214434",
+            "----------------------------"
+        ];
+        assert_eq!("20241112214434", &dummy_log.iter().nth_back(4).unwrap().to_string());
+        assert_eq!("/home/abhi/projects/abhi/github/rid/file004.org", &dummy_log.iter().nth_back(3).unwrap().to_string());
+        assert_eq!("/home/abhi/.local/share/Trash/files/file004.2024-11-12_21:44:34.org", &dummy_log.iter().nth_back(2).unwrap().to_string());
+        assert_eq!("20241112214434", &dummy_log.iter().nth_back(1).unwrap().to_string());
+        assert_eq!("----------------------------", &dummy_log.iter().nth_back(0).unwrap().to_string());
+    }
 }

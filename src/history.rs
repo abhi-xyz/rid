@@ -40,15 +40,15 @@ pub fn write_history() -> Result<(), Box<dyn Error>> {
     // let hist_file = "rid_history.json".to_owned();
     // let contents = fs::read_to_string(hist_file)?;
     let file = File::open("rid_history.json").expect("where is the rid_history.json file?");
-    let reader = BufReader::new(file);
-    let history_from_json: HistoryItems =
-        serde_json::from_reader(reader).expect("reader failed to read the json data");
+    let _reader = BufReader::new(file);
+    // let history_from_json: HistoryItems =
+        // serde_json::from_reader(reader).expect("reader failed to read the json data");
 
     // let json: serde_json::Value = serde_json::from_str(&contents).expect("JSON was not well-formatted");
     // println!("got this:\n{}", json);
-    println!("got this:\n{:?}", history_from_json);
-    println!("from: {}", history_from_json.from);
-    println!("to: {}", history_from_json.to);
+    // println!("got this:\n{:?}", history_from_json);
+    // println!("from: {}", history_from_json.from);
+    // println!("to: {}", history_from_json.to);
 
     /*
     let hist = HistoryItems {

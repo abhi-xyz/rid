@@ -1,15 +1,10 @@
 use clap::{Parser, Subcommand};
 use log::trace;
+use rid::core::{recursive_remove, remove_file};
+use rid::garbage_collection::gc;
+use rid::history::write_history;
 use std::path::PathBuf;
-
-pub mod core;
-pub mod garbage_collection;
-pub mod history;
-pub mod utils;
-
-use core::{recursive_remove, remove_file};
-use garbage_collection::gc;
-use history::write_history;
+use rid::revert::read_json_history;
 
 #[derive(Parser)]
 #[command(
@@ -58,6 +53,9 @@ enum Commands {
         // #[arg(short, long)]
         date: i8,
     },
+    Revert {
+    //    num: i8,
+    }
 }
 
 fn main() {
@@ -96,6 +94,9 @@ fn main() {
             }
         }
         Some(Commands::Gc { date }) => gc(date).unwrap(),
+        Some(Commands::Revert {  }) => {
+            read_json_history().unwrap();
+        },// Some(Commands::Revert {  }) => read_history(), // write_log(num).unwrap(),
         None => {}
     }
 }

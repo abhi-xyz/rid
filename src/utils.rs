@@ -1,17 +1,43 @@
 use std::error::Error;
+use std::num::ParseIntError;
 use std::path::{Path, PathBuf};
+use std::str::FromStr;
 
 use chrono::{DateTime, Local};
 use dirs::data_local_dir;
 use log::trace;
 
+/// # LogId unique id which represents year, month, date, hour, minute and second
+/// in this order itself. ("%Y%m%d%H%M%S")
+#[derive(PartialEq, Eq, PartialOrd, Ord, Debug)]
+pub struct LogId {
+    pub num: u64,
+}
+
+impl From<u64> for LogId {
+    fn from(value: u64) -> Self {
+        LogId { num: value }
+    }
+}
+
+impl FromStr for LogId {
+    type Err = ParseIntError;
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s.trim().parse() {
+            Ok(id) => Ok(LogId { num: id }),
+            Err(e) => Err(e),
+        }
+    }
+}
+
+
 /// # Returns the path to the user's local trash directory.
 ///
 /// The returned value depends on the operating system and is either a `Some`, containing a value from the following table, or a `None`.
 ///
-/// |Platform | Value                                                | Example                                   |
-/// | ------- | -----------------------------------------------------| ----------------------------------------- |
-/// | Linux   | `$XDG_DATA_HOME` or `$HOME`/.local/share/Trash/files | /home/alice/.local/share/Trash/files      |
+/// |Platform | Value                            | Example                              |
+/// | ------- | ---------------------------------| ------------------------------------ |
+/// |  Linux  | `$HOME`/.local/share/Trash/files | /home/alice/.local/share/Trash/files |
 pub fn trash_dir() -> PathBuf {
     let trash_dir = data_local_dir()
         .expect("Failed to get local data directory")

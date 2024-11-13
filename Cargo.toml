@@ -1,6 +1,6 @@
 [package]
 name = "rid"
-version = "0.1.1"
+version = "0.1.2"
 edition = "2021"
 description = "rid a safe alternative to rm"
 
@@ -10,7 +10,6 @@ clap = { version = "4.5.20", features = ["derive"] }
 dirs = "5.0.1"
 env_logger = "0.11.5"
 log = "0.4.22"
-serde = { version = "1.0.214", features = ["derive"] }
 
 [profile.release]
 panic = 'abort'

@@ -4,7 +4,7 @@ use rid::core::{recursive_remove, remove_file};
 use rid::garbage_collection::gc;
 use rid::history::write_history;
 use std::fs::remove_dir_all;
-use std::path::{self, Path, PathBuf};
+use std::path::{Path, PathBuf};
 use rid::revert::read_json_history;
 
 #[derive(Parser)]

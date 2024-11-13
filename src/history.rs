@@ -2,20 +2,20 @@
     TODO: wild card support
     : convert string arguments to vector
 */
-
 use chrono::Local;
-use serde::{Deserialize, Serialize};
 use std::error::Error;
 use std::fs::File;
 use std::io::BufReader;
 
-#[derive(Debug, Serialize, Deserialize)]
+#[allow(dead_code)]
+#[derive(Debug)]
 struct Hist {
     id: String,
     item: Vec<HistoryItems>,
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[allow(dead_code)]
+#[derive(Debug)]
 struct HistoryItems {
     //  id: u64,
     from: String,

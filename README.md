@@ -9,7 +9,71 @@ Absolutely. File move operations with rid are instantaneous, regardless of file 
 
 ## Features
 - files are moved to `trash dir` instead of being copied and then deleted
-    
+
+## Installation
+
+## Build
+
+```bash
+git clone https://github.com/abhi-xyz/rid.git --depth=1 
+cd rid
+cargo Build --release
+# mv target/release/rid ~/local/.bin/ or /bin/
+
+```
+
+
+### Nixos
+
+- Test run
+
+```bash
+nix run github:abhi-xyz/rid -- <COMMAND>
+
+```
+
+- via flake
+Flake input
+-In flake.nix
+```nix
+rid = {
+    url = "github:abhi-xyz/rid";
+    inputs.nixpkgs.follows = "nixpkgs";
+};
+```
+
+```nix
+outputs =
+inputs@{
+    self,
+        rid,
+        nixpkgs,
+        ...
+}
+```
+
+```nix
+{
+    nixosConfigurations."nixos" = nixpkgs.lib.nixosSystem {
+    inherit system;
+    specialArgs = {
+        inherit inputs;
+    };
+    modules = [
+    (
+        { ... }:
+        {
+            nixpkgs.overlays = [ overlay-unstable ];
+        }
+    )
+    ./hosts/configuration.nix
+    rid.nixosModules.rid
+```
+- In configuration.nix
+```nix
+program.rid.enable = true;
+```
+
 ## known bugs
 - 
 

@@ -1,39 +1,18 @@
-name: Build, bump tag version and release
-
+name: rust release action
 on:
   push:
-    branches:
-      - master
-
+    tags:
+      - "v*"
 jobs:
   release:
-    name: Release - ${{ matrix.platform.release_for }}
+    runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        platform:
-          - os_name: Linux-x86_64
-            os: ubuntu-20.04
-            target: x86_64-unknown-linux-musl
-
-          - os_name: macOS-x86_64
-            os: macOS-latest
-            target: x86_64-apple-darwin
-
-            # more release targets here ...
-
-    runs-on: ${{ matrix.platform.os }}
+        os: [ubuntu-latest, windows-latest, macos-latest]
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-      - name: Build executable
-        uses: houseabsolute/actions-rust-cross@v0
+      - uses: actions/checkout@v4
+      - name: test build rust project
+        uses: lxl66566/rust-simple-release@main
         with:
-          target: ${{ matrix.platform.target }}
-          args: "--locked --release"
-          strip: true
-      - name: Publish artifacts and release
-        uses: houseabsolute/actions-rust-release@v0
-        with:
-          executable-name: ubi
-          target: ${{ matrix.platform.target }}
-        if: matrix.toolchain == 'stable'
+          targets: aarch64-unknown-linux-gnu, aarch64-unknown-linux-musl, x86_64-pc-windows-msvc, x86_64-unknown-linux-musl, x86_64-unknown-linux-gnu, aarch64-apple-darwin, x86_64-apple-darwin
+          token: ${{ secrets.GH_TOKEN }}

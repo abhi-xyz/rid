@@ -1,3 +1,5 @@
+ver := `grep '^version =' Cargo.toml | sed 's/version = "\(.*\)"/\1/'`
+
 dev:
   nix develop ./nix/dev --command fish
 
@@ -8,5 +10,6 @@ remote-run:
   nix run github:abhi-xyz/rid -- help
 
 release:
-  git tag v0.1.2
+  git tag v{{ver}}
   git push --tags
+

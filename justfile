@@ -11,5 +11,6 @@ remote-run:
 
 release:
   git tag v{{ver}}
+  git add -A && git commit -m 'new release' && git push
   git push --tags
 

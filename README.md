@@ -9,6 +9,7 @@ Absolutely. File move operations with rid are instantaneous, regardless of file 
 
 ## Features
 - files are moved to `trash dir` instead of being copied and then deleted
+- `rid --revert` for restoring perviously removed file/directory
 
 ## Installation
 
@@ -18,61 +19,57 @@ Absolutely. File move operations with rid are instantaneous, regardless of file 
 git clone https://github.com/abhi-xyz/rid.git --depth=1 
 cd rid
 cargo build --release
-
-# mv target/release/rid /bin/ or ~/local/.bin/
-
+cp target/release/rid /usr/local/bin/
 ```
 
 
 ### Nixos
 
-- Test run
-
-```bash
-nix run github:abhi-xyz/rid -- <COMMAND>
-
-```
-
-- via flake
-Flake input
--In flake.nix
+Add `rid` as a flake input: In your flake.nix file, add the rid input pointing to its GitHub repository.
 ```nix
-rid = {
-    url = "github:abhi-xyz/rid";
-    inputs.nixpkgs.follows = "nixpkgs";
-};
-```
+{
+  inputs = {
+    nixpkgs.url = "github:NixOS/nixpkgs";
+    rid = {
+      url = "github:abhi-xyz/rid";
+      inputs.nixpkgs.follows = "nixpkgs"; # Follows the nixpkgs input
+    };
+  };
 
-```nix
-outputs =
-inputs@{
-    self,
-        rid,
-        nixpkgs,
-        ...
+  outputs = { self, rid, nixpkgs, ... }@inputs:
+  {
+    # Your NixOS configuration or other settings
+  };
 }
 ```
 
+Include rid in NixOS configuration: In the outputs section, set up nixosConfigurations and add rid as a module to enable it within your system configuration.
 ```nix
 {
-    nixosConfigurations."nixos" = nixpkgs.lib.nixosSystem {
-    inherit system;
-    specialArgs = {
-        inherit inputs;
+  outputs = { self, rid, nixpkgs, ... }@inputs:
+  {
+    nixosConfigurations."my-nixos-host" = nixpkgs.lib.nixosSystem {
+      system = "x86_64-linux";
+      specialArgs = { inherit inputs; };
+      modules = [
+        ./hosts/configuration.nix # Main NixOS configuration file
+        rid.nixosModules.rid      # Enable the "rid" module from the flake
+      ];
     };
-    modules = [
-    (
-        { ... }:
-        {
-            nixpkgs.overlays = [ overlay-unstable ];
-        }
-    )
-    ./hosts/configuration.nix
-    rid.nixosModules.rid
+  };
+}
 ```
-- In configuration.nix
+Activate "rid" in configuration.nix: Within configuration.nix, enable the "rid" program:
 ```nix
-program.rid.enable = true;
+{
+  # Other configurations...
+  
+  program.rid.enable = true; # note: its program not programs
+}
+```
+Apply Configuration: After updating your configuration, apply it with:
+```bash
+sudo nixos-rebuild switch --flake .
 ```
 
 ## known bugs

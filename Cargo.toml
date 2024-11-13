@@ -1,10 +1,11 @@
 [package]
 name = "rid"
-version = "0.1.8"
+version = "0.1.9"
 edition = "2021"
 description = "rid a safe alternative to rm"
 
 [dependencies]
+anyhow = "1.0.93"
 chrono = "0.4.38"
 clap = { version = "4.5.20", features = ["derive"] }
 dirs = "5.0.1"

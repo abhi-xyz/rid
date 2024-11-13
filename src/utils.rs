@@ -30,7 +30,7 @@ impl FromStr for LogId {
     }
 }
 
-/// # Returns the path to the user's local trash directory.
+///# Returns the path to the user's local trash directory.
 ///
 /// The returned value depends on the operating system and is either a `Some`, containing a value from the following table, or a `None`.
 ///
@@ -102,5 +102,3 @@ pub fn split_path_and_file(path: &Path) -> Result<(String, String), Box<dyn Erro
         }
     }
 }
-
-

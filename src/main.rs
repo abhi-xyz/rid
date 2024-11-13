@@ -1,11 +1,11 @@
 use clap::{Parser, Subcommand};
 use log::trace;
-use rid::core::{recursive_remove, remove_file};
+use rid::core::remove_files;
 use rid::garbage_collection::gc;
 use rid::history::write_history;
+use rid::revert::read_json_history;
 use std::fs::remove_dir_all;
 use std::path::{Path, PathBuf};
-use rid::revert::read_json_history;
 
 #[derive(Parser)]
 #[command(
@@ -13,22 +13,23 @@ use rid::revert::read_json_history;
     name = "rid",
     author = "Abhinandh S <ugabhi@proton.me>",
     about = "rid",
-    long_about = "By default, rid does not remove directories.Use the --recursive (-r) option to remove each listed directory, too, along with all of its contents.\n
-        To remove a file whose name starts with a '-', for example '-foo',\n
-        use one of these commands:\n
-        rid -- -foo\n
-        rid ./-foo\n
-        If you use rid to remove a file, it might be possible to recover the file/directory.\n
-        Files are trashed to XDG specified trash directory.\n
-        Example:\n
-        `$HOME`/.local/share/Trash/files\n"
+    //long_about = "By default, rid does not remove directories.Use the --recursive (-r) option to remove each listed directory, too, along with all of its contents.\n
+    //    To remove a file whose name starts with a '-', for example '-foo',\n
+    //    use one of these commands:\n
+    //    rid -- -foo\n
+    //    rid ./-foo\n
+    //    If you use rid to remove a file, it might be possible to recover the file/directory.\n
+    //    Files are trashed to XDG specified trash directory.\n
+    //    Example:\n
+    //    `$HOME`/.local/share/Trash/files\n"
 )]
 struct Cli {
     /// Remove files
     file: Option<Vec<PathBuf>>,
+
     /// Remove directories and their contents recursively
-    #[arg(short, long, value_name = "FILE")]
-    recursive: Option<Vec<PathBuf>>,
+    #[arg(short, long)]
+    recursive: bool,
 
     /// Remove directories and their contents recursively
     #[arg(short, long, value_name = "FILE")]
@@ -58,25 +59,19 @@ enum Commands {
         // #[arg(short, long)]
         date: i8,
     },
+    /// revert the previous remove
     Revert {
-    //    num: i8,
-    }
+        //    num: i8,
+    },
 }
 
 fn main() {
     env_logger::init();
     let cli = Cli::parse();
 
-    // Initialize logging based on verbosity flag
-    if cli.verbose {
-        trace!("verbose enabled");
-    } else {
-        trace!("verbose disabled");
-    }
-
-    if let Some(file) = cli.file {
-        trace!("{:#?}", &file);
-        remove_file(file, cli.verbose).unwrap();
+    if let Some(items) = cli.file {
+        trace!("{:#?}", &items);
+        remove_files(items, cli.recursive, cli.verbose).unwrap();
     }
 
     if let Some(forece_file) = cli.force {
@@ -88,10 +83,7 @@ fn main() {
             }
         }
     }
-    
-    if let Some(path) = cli.recursive {
-        recursive_remove(path, cli.verbose).unwrap();
-    }
+
     if let Some(t) = cli.json {
         if t {
             write_history().unwrap();
@@ -109,9 +101,9 @@ fn main() {
             }
         }
         Some(Commands::Gc { date }) => gc(date).unwrap(),
-        Some(Commands::Revert {  }) => {
+        Some(Commands::Revert {}) => {
             read_json_history().unwrap();
-        },// Some(Commands::Revert {  }) => read_history(), // write_log(num).unwrap(),
+        } // Some(Commands::Revert {  }) => read_history(), // write_log(num).unwrap(),
         None => {}
     }
 }

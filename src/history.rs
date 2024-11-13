@@ -42,7 +42,7 @@ pub fn write_history() -> Result<(), Box<dyn Error>> {
     let file = File::open("rid_history.json").expect("where is the rid_history.json file?");
     let _reader = BufReader::new(file);
     // let history_from_json: HistoryItems =
-        // serde_json::from_reader(reader).expect("reader failed to read the json data");
+    // serde_json::from_reader(reader).expect("reader failed to read the json data");
 
     // let json: serde_json::Value = serde_json::from_str(&contents).expect("JSON was not well-formatted");
     // println!("got this:\n{}", json);

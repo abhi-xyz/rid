@@ -8,8 +8,8 @@ The goal of `rid` is to retain familiarity with `rm`-style syntax while adding u
 Absolutely. File move operations with rid are instantaneous, regardless of file size, since they only adjust file pointers within the filesystem rather than copying bytes across the disk. So, yes its freaking fast.
 
 ## Features
-- files are moved to `trash dir` instead of being copied and then deleted
-- `rid --revert` for restoring perviously removed file/directory
+- `rid` _filename_ : files will moved to `trash dir`. ie, $HOME/.local/share/Trash/files/
+- `rid --revert` : restors perviously removed file/directory
 
 ## Installation
 

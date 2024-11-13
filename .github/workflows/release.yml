@@ -7,10 +7,6 @@ permissions:
   contents: write
   id-token: write
 
-env:
-  CARGO_TERM_COLOR: always
-  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
 jobs:
   build:
     name: Build

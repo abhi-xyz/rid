@@ -17,8 +17,9 @@ Absolutely. File move operations with rid are instantaneous, regardless of file 
 ```bash
 git clone https://github.com/abhi-xyz/rid.git --depth=1 
 cd rid
-cargo Build --release
-# mv target/release/rid ~/local/.bin/ or /bin/
+cargo build --release
+
+# mv target/release/rid /bin/ or ~/local/.bin/
 
 ```
 

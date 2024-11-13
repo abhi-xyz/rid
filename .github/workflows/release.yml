@@ -7,29 +7,15 @@ on:
 
 jobs:
   release:
-    name: Build and Release
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-      - name: Build project
-        run: cargo build --release --locked
-      - name: Bump version and push tag/create release point
-        uses: anothrNick/github-tag-action@1.17.2
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          WITH_V: true
-        id: bump_version
-      - name: Upload binary to release
-        uses: svenstaro/upload-release-action@v1-release
-        with:
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: target/release/alemanes
-          asset_name: alemanes-linux-amd64
-          tag: ${{ steps.bump_version.outputs.new_tag }}
-          overwrite: true
-
-  # build_and_test:
+  runs-on: ubuntu-latest
+  steps:
+    - uses: actions/checkout@v3
+    - uses: manoadamro/rust-release@v1
+      with:
+        owner: ${{ github.repository_owner }}
+        repo: ${{ github.repository }}
+        token: ${{ secrets.GITHUB_TOKEN }}
+ # build_and_test:
   #   name: Rust project - latest
   #   runs-on: ubuntu-latest
   #   strategy:

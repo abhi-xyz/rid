@@ -31,7 +31,7 @@ jobs:
       
       - run: mkdir -p ~/.local/share/Trash/files
       - run: cargo build --verbose
-        run: ls
+      - run: ls
       - run: cargo test --verbose
-        run: ls
+      - run: ls
   

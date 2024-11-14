@@ -76,12 +76,12 @@ pub fn remove_files(items: Vec<PathBuf>, recursive: bool, verbose: bool) -> anyh
                         &trash_path.display()
                     )
                 })?;
-                write_log(
-                    id,
-                    item_path.to_str().unwrap().to_string(),
-                    trash_path.to_str().unwrap().to_string(),
-                )
-                .unwrap();
+                //write_log(
+                //    id,
+                //    item_path.to_str().unwrap().to_string(),
+                //    trash_path.to_str().unwrap().to_string(),
+                //)
+                //.unwrap();
                 if verbose {
                     println!("Trashed {} to {}", &item.display(), &trash_path.display());
                 }

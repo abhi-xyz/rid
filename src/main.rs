@@ -4,6 +4,7 @@ use rid::core::remove_files;
 use rid::garbage_collection::gc;
 use rid::history::write_history;
 use rid::revert::read_json_history;
+use rid::wild_cards::wild_card;
 use std::fs::remove_dir_all;
 use std::path::{Path, PathBuf};
 
@@ -63,6 +64,12 @@ enum Commands {
     Revert {
         //    num: i8,
     },
+    /// recursive remove files with wild card and patterns
+    WildCard {
+        // #[arg(short, long)]
+        pattern: String,
+        path: String
+    },
 }
 
 fn main() {
@@ -104,6 +111,7 @@ fn main() {
         Some(Commands::Revert {}) => {
             read_json_history().unwrap();
         } // Some(Commands::Revert {  }) => read_history(), // write_log(num).unwrap(),
+        Some(Commands::WildCard { pattern, path }) => wild_card(path.to_string(), pattern.to_string()).unwrap(),
         None => {}
     }
 }

@@ -29,7 +29,7 @@ jobs:
       
       - run: mkdir -p ~/.local/share/Trash/files
       - run: cargo build --verbose
-      - run: cargo test --verbose
+      - run: cargo test -- --nocapture # --verbose
 
       - name: Display PWD after test
         run: echo "PWD is ${{ github.workspace }}"

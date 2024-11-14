@@ -1,7 +1,7 @@
-use std::fs;
-
 #[cfg(test)]
 mod tests {
+    use std::fs;
+
 
     #[test]
     fn github_test() {

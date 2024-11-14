@@ -4,6 +4,7 @@ use std::io::{BufRead, BufReader, Write};
 use std::path::Path;
 use std::vec;
 
+use dirs::data_dir;
 use log::debug;
 
 #[derive(Debug, Clone, PartialEq, PartialOrd)]
@@ -23,11 +24,12 @@ pub fn write_log(
     unique_id: String,
     original_path: String,
     trash_path: String,
-) -> Result<(), Box<dyn Error>> {
+) -> anyhow::Result<()> {
+    let log_file = data_dir().unwrap().join("rid/rid_history.log");
     let mut file = OpenOptions::new()
         .create(true) // Create the file if it doesn't exist
         .append(true) // Append to the file if it already exists
-        .open("/home/abhi/.local/share/rid/rid_history.log")?;
+        .open(log_file)?;
 
     writeln!(file, "{}", unique_id)?;
     writeln!(file, "{}", original_path)?;
@@ -38,7 +40,8 @@ pub fn write_log(
 }
 
 pub fn read_json_history() -> Result<(), Box<dyn Error>> {
-    let file = fs::File::open("/home/abhi/.local/share/rid/rid_history.log")?;
+    let log_file = data_dir().unwrap().join("rid/rid_history.log");
+    let file = fs::File::open(&log_file)?;
     let reader = BufReader::new(file);
 
     let mut a_vec: Vec<String> = vec::Vec::new();
@@ -57,7 +60,7 @@ pub fn read_json_history() -> Result<(), Box<dyn Error>> {
     if vec_lng > 160 {
         a_vec.truncate(160);
     }
-    let mut new_file = fs::File::create("/home/abhi/.local/share/rid/rid_history.log")?;
+    let mut new_file = fs::File::create(log_file)?;
     for i in a_vec {
         writeln!(new_file, "{}", i)?;
     }

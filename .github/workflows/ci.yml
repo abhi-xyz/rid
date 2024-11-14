@@ -20,6 +20,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: rustup update ${{ matrix.toolchain }} && rustup default ${{ matrix.toolchain }}
+      
+      - name: Display PWD
+        run: echo "PWD is ${{ github.workspace }}"
+        
+      - name: List files in PWD
+        run: ls ${{ github.workspace }}
+      
       - run: mkdir -p ~/.local/share/Trash/files
       - run: cargo build --verbose
       - run: cargo test --verbose

@@ -27,6 +27,8 @@ jobs:
         
       - name: List files in PWD
         run: ls ${{ github.workspace }}
+      
+      - name: List files
         run: ls
       
       - run: mkdir -p ~/.local/share/Trash/files

@@ -10,7 +10,8 @@ mod tests {
     #[test]
     fn github_test() {
         if trash_dir().exists() {
-            panic!("trash dir exists!");
+            
+            panic!("trash dir exists! {}", trash_dir().display());
         } else {
             panic!("trash dir doesn't exists");
         }

@@ -23,6 +23,8 @@ jobs:
       
       - name: Display PWD
         run: echo "PWD is ${{ github.workspace }}"
+      
+      - name: List files 001
         run: ls
         
       - name: List files in PWD

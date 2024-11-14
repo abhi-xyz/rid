@@ -32,4 +32,4 @@ jobs:
       - run: cargo test -- --nocapture # --verbose
 
       - name: Display PWD after test
-        run: echo "PWD is ${{ github.workspace }}"
+        run: ls ${{ github.workspace }}

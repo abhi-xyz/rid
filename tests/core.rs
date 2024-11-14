@@ -57,6 +57,7 @@ mod tests {
         for i in &single_files {
             fs::write(i, "some contents for the files").expect("Cant create files");
             assert!(fs::exists(i).expect("Can't check existence of file tmp_file.txt"));
+            pretty_assertions::assert_eq!(1, 1);
         }
         remove_files(single_files.clone(), false, true).unwrap();
         for i in &single_files {

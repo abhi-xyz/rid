@@ -20,7 +20,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: rustup update ${{ matrix.toolchain }} && rustup default ${{ matrix.toolchain }}
-      - run: mkdir ~/.local/share/Trash/files
+      - run: mkdir -p ~/.local/share/Trash/files
       - run: cargo build --verbose
       - run: cargo test --verbose
   

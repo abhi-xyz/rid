@@ -3,12 +3,16 @@ mod tests {
     use std::fs;
     use std::path::PathBuf;
 
+    use dirs::data_dir;
     use rid::core::remove_files;
     use rid::utils::trash_dir;
 
 
     #[test]
     fn github_test() {
+        if data_dir().expect("Cant get data dir").join("rid").exists() {
+            panic!("data dir exists {}", data_dir().unwrap().join("rid").display());
+        }
         if trash_dir().exists() {
             let v0 = PathBuf::from("temp_file_for_single_file_text01.txt");
             let v1 = PathBuf::from("temp_file_for_single_file_text02.txt");

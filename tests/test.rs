@@ -17,6 +17,8 @@ mod tests {
             fs::write(i, "some contents for the files").expect("Cant create files");
             assert!(fs::exists(i).expect("Can't check existence of file tmp_file.txt"));
         }
+        remove_files(single_files, false, true).expect("Test failed");
+
         // fs::write("file_for_github.txt", "some contents for the files").expect("Cant create files for github");
         // fs::create_dir_all("some/dir/for/testing").expect("Cant create files for github");
 
